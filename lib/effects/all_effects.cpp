@@ -7,6 +7,8 @@
 #include <effect_test_passthrough.h>
 #include <effect_test_params.h>
 #include <effect_iir_lp.h>
+#include <effect_vol_fixed_point.h>
+#include <effect_vol_float_point.h>
 
 //======================== STATIC VARIABLE DEFINITION =====================
 //################### USE THIS SPACE TO INSTANTIATE "MASTERs" OF ALL EFFECTS #################
@@ -21,6 +23,10 @@ Effect_Interface* const Effects_Manager::available_effects[] = {
         //Initialize a prototype lowpass FIR and IIR filter
         /* TODO FIR filter */
         new Effect_IIR_LP(),
+
+        //Prototypes for digital volume control (fixed/float impl)
+        new Effect_Vol_Fixed_Point(),
+        new Effect_Vol_Float_Point(),
     };
 
 //################### end EFFECT MASTER DEFINITION #####################
