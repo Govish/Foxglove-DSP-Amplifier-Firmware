@@ -63,14 +63,14 @@ void Effect_Vol_Float_Point::audio_update(const Audio_Block_t& block_in, Audio_B
          *      --> search on the internet to see how to cast to a float in C++; if you're having trouble, find me
          *  - get the value of the parameter by using the `get()` function
          */
-        float vol_adjust_sample = /*TODO: your code here*/ (float)sample_in * volume.get();
+        float vol_adjust_sample = /*TODO: your code here*/ 0;
         
         /**
          * Output our volume adjusted sample here
          * Need to convert back into an `int16_t`
          *      \--> should be able to do this just by re-casting
         */
-        sample_out = /*TODO your code here*/ (int16_t)vol_adjust_sample;
+        sample_out = /*TODO your code here*/ sample_in;
     }
 }
 

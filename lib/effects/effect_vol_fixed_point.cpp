@@ -59,11 +59,11 @@ void Effect_Vol_Fixed_Point::audio_update(const Audio_Block_t& block_in, Audio_B
          * A volume of `0` should correspond to 0
          * Should be a relatively simple one-line conversion
          */        
-        vol_fp = /* TODO your code*/ (int32_t)(std::numeric_limits<int32_t>::max()) * volume.get();
+        vol_fp = /* TODO your code*/ 0;
         
         //update the previous volume value such that we only run this `if` statement
         //if the volume knob was adjusted
-        prev_volume = /* TODO your code */ volume.get();
+        prev_volume = /* TODO your code */ 0;
     }
 
     //actually run our effect, having computed our constants
@@ -80,8 +80,8 @@ void Effect_Vol_Fixed_Point::audio_update(const Audio_Block_t& block_in, Audio_B
          * 
          * NOTE: does this function do everything we need? Or do we have to apply another shift to our data?   
         */
-        int32_t vol_adj_sample = /*TODO: your code*/signed_multiply_32x16b(vol_fp, sample_in);
-        vol_adj_sample = vol_adj_sample << 1;
+        int32_t vol_adj_sample = /*TODO: your code*/ 0;
+        /* TODO any other relevant code for `vol_adj_sample` */
 
         /**
          * our sample is currently a 32-bit value
@@ -94,7 +94,7 @@ void Effect_Vol_Fixed_Point::audio_update(const Audio_Block_t& block_in, Audio_B
         */
         
         //output our volume-adjusted sample
-        sample_out = (int16_t)(vol_adj_sample >> 16);
+        sample_out = /*TODO: your code*/ sample_in;
     }
 }
 
