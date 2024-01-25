@@ -90,7 +90,14 @@ RGB_LED::COLOR Effect_Cab_Sim::get_theme_color() { return theme_color; }
 //======================================= CORE OF THE EFFECT --> CONVOLUTIONAL REVERB ==============================
 
 /**
- * TODO: this
+ * Audio update for this effect basically implements a convolutional reverb
+ * Notes about this:
+ *  - We internally maintain a circular buffer of the past `n` samples
+ *      - this circular buffer is called `sample_memory`
+ *      - our circular buffer is 16 bits
+ *  - our FIR taps are stored in the impulse kernel
+ *      - they are in Q1.31 format
+ * 
 */
 void Effect_Cab_Sim::audio_update(const Audio_Block_t& block_in, Audio_Block_t& block_out) {
     //go through all of the samples in the block 
@@ -100,34 +107,43 @@ void Effect_Cab_Sim::audio_update(const Audio_Block_t& block_in, Audio_Block_t& 
         auto& sample_out = block_out[block_sample_index];
 
         //drop the particular input sample into our circular sample buffer
-        sample_memory[sample_memory_head] = sample_in;
+        /**
+         * TODO: your code here
+        */
+        sample_memory[ /** TODO: where do we wanna put our sample?*/ 0] = /** TODO: what are we putting here?*/ 0;
 
         //actually run the convolution
         //use 32x16 multiply-accumulate (MAC) DSP instructions to make this happen
         int32_t sum = 0;
-        size_t sample_buffer_ptr = sample_memory_head; //most recent sample
+        size_t sample_buffer_ptr = /** TODO: we'll start our convolution from our most recent sample - where is this in the buffer?*/0;
         for(const auto& tap : impulse_kernel) {
             const auto& sample = sample_memory[sample_buffer_ptr]; //grab the FIR tap and the corresponding sample
-            sum = signed_multiply_accumulate_32x16b(sum, tap, (uint32_t)sample); //run the MAC using DSP instructions
+            /** */
+            sum = /** TODO: what DSP instruction should we use? look in `dspinst.h` Also, what should the arguments to this function be?*/ 0;
 
-            //tap will move "forward in time"
-            //sample index will move "backward in time"
+            //tap will move "forward in time" --> this is done automatically by the `for` loop
+            //sample index will need to move "backward in time"
             //roll-over the sample buffer pointer as necessary 
-            if(sample_buffer_ptr == 0) sample_buffer_ptr = sample_memory.size() - 1;
-            else sample_buffer_ptr--;
+            if(sample_buffer_ptr == /** TODO: rollover condition*/ -1) sample_buffer_ptr = /** TODO: rollover reset value */ -1;
+            else sample_buffer_ptr; /** TODO: what should normally happen to the sample buffer index? */
         }
         
-        //since FIR taps are Q1.31, we need to left shift our sum by 1
-        sum = sum << 1;
+        /**
+         * TODO: compute the sample output given our sum value
+         *      - we may need to shift the sum value by a particular amount
+         *      - PITFALL --> we may also need to additionaly scale the sum by a particular value depending on FIR coefficients
+         *      - our `sample out` is also only 16-bits whereas the sum is 32-bits --> which 16 bits of the sum do we grab? how do we do this?
+         *          - should be almost identical to volume control
+        */
+        sum = /** TODO: compute the sum value as necessary */0;
+        sample_out = /** TODO: your code here*/ sample_in;
 
-        //and our sample output would be the upper 16 bits of the sum
-        //the previous left shift and this right shift should be consolidated into a single shift
-        //writing it this way for clarity
-        sample_out = (int16_t)(sum >> 16);
-
-        //not forgetting to increment the circular buffer for the sample memory; roll over to zero as necessary
-        sample_memory_head++;
-        if(sample_memory_head >= sample_memory.size()) sample_memory_head = 0;
+        /**
+         * TODO: We need to update the 'head' of our circular buffer -- what should we do here?
+         *      - should normally increment the head of our buffer
+         *      - the head also needs to wrap around to the beginning of our memory index
+        */
+        sample_memory_head = /** TODO: your circular buffer head management code (may need another line)*/ 0;
     }
 }
 //=========================== OVERRIDDEN PRIVATE FUNCTIONS =========================
