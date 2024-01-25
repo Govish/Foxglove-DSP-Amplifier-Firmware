@@ -9,6 +9,7 @@
 #include <effect_iir_lp.h>
 #include <effect_vol_fixed_point.h>
 #include <effect_vol_float_point.h>
+#include <effect_cab_sim.h>
 
 //======================== STATIC VARIABLE DEFINITION =====================
 //################### USE THIS SPACE TO INSTANTIATE "MASTERs" OF ALL EFFECTS #################
@@ -27,6 +28,9 @@ Effect_Interface* const Effects_Manager::available_effects[] = {
         //Prototypes for digital volume control (fixed/float impl)
         new Effect_Vol_Fixed_Point(),
         new Effect_Vol_Float_Point(),
+
+        //cab sim effects
+        new Effect_Cab_Sim(RGB_LED::BLUE, "Fender Twin Reverb", Effect_Cab_Sim::FENDER_TWIN_REVERB),
     };
 
 //################### end EFFECT MASTER DEFINITION #####################
