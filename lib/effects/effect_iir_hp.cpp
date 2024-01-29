@@ -45,7 +45,12 @@ Effect_IIR_HP::Effect_IIR_HP(const Effect_IIR_HP& other):
 {}
 
 //################# CORE OF THE EFFECT ###################
-
+/**
+ * NOTE: Implementing high-pass filter as a complement to the low-pass filter
+ * basically means we'll doing all calculations for a low-pass filter
+ * And subtracting the input signal from our low-passed version of the input signal
+ *  in order to effectively compute the output of the high-pass filter
+*/
 void Effect_IIR_HP::audio_update(const Audio_Block_t& block_in, Audio_Block_t& block_out) {
     //synchronize our parameter for reading/rendering
     f_cutoff.synchronize();
@@ -55,19 +60,32 @@ void Effect_IIR_HP::audio_update(const Audio_Block_t& block_in, Audio_Block_t& b
         //compute the uint16_t decay parameter from the desired time constant
         //do this by first computing $e^-1$ --> corresponds to decay after a single time constant
         //from here, figure out the amount of incremental decay for this level of decay to happen after the specified time constant
-        //then convert that number into a Q0.32 fixed-point format
+        //then convert that number into a Q1.31 fixed-point format
         
-        //compute `tau` of the lowpass filter in units of samples
-        //inverse of the radian frequency gives us seconds; multiplying by sampling frequency gives us Hz
-        float filter_time_constant = ((float)App_Constants::AUDIO_SAMPLE_RATE_HZ)/(f_cutoff.get() * RADSEC_PER_HZ);
+        //compute `tau` of the lowpass filter --> should have units of samples
+        /**
+         * TODO: your code here - how do we calculate filter time constant? It will involve three parameter:
+         *      - Desired cutoff frequency (cycles/seconds)
+         *      - Audio sample rate (samples/seconds)
+         *      - RADSEC_PER_HZ (radians/cycle)
+        */
+        float filter_time_constant = 1 /* TODO - your code */;
 
-        //compute the n-th root of the time constant to figure out how much decay per sample
-        //essentially after `filter_time_constant` multiplies, we need to have a signal level corresponding to exp(-1)
-        float decay_per_sample = pow(EXP_m1, 1.0/filter_time_constant); 
+        /**
+         * TODO: compute the decay between each successive sample
+         *  - After `filter_time_constant` # of samples, a unit sample should decay to `EXP_m1` (e^-1, ~0.367)
+         *  - Need to calculate how much decay there should be after a single sample
+         *  - the `pow(x, y)` method may be useful, as it computes x^y
+        */
+        float decay_per_sample = 0 /* TODO - your code*/ ; 
         
-        //conversion to Q1.31 fixed point --> lets us use some DSP instructions when leveraging this effect
-        //the way numerical constants are computed means gain of the system should never exceed 1
-        feedback_factor = (int32_t)(std::numeric_limits<int32_t>::max() + 1.0) * decay_per_sample;
+        /**
+         * TODO: express the decay per sample as a fixed-point Q1.31 number
+         *  - Lets us use DSP instructions when we actually run the effect
+         *  - we'll call this new value `feedback_factor` since it's what we multiply the previous output by
+         *  - we'll also define the `feedforward_factor` as 1 - `feedback_factor` --> this is how much we weight the incoming sample by
+        */
+        feedback_factor = 0 /* TODO - your code*/;
         feedforward_factor = (int32_t)((uint32_t)(1<<31) - feedback_factor);
 
         //save our new cutoff frequency
@@ -86,12 +104,26 @@ void Effect_IIR_HP::audio_update(const Audio_Block_t& block_in, Audio_Block_t& b
         //sum these two together and save the new output 
         //use DSP instructions to make this process slightly faster
         //need additional left shift for Q1.31 format for the IIR coeffficients
-        int32_t lp_feed_forward = signed_multiply_32x16b(feedforward_factor, (uint32_t)(sample_in));
-        int32_t lp_new_output = multiply_accumulate_32x32_rshift32_rounded(lp_feed_forward, feedback_factor, lp_last_output) << 1;
+        /**
+         * TODO: run the actual filter - use DSP instructions for speed
+         *  - `feed_forward` should be the input sample (16-bits) * `feedforward_factor` (32-bits)
+         *  - we'll add this to...
+         *  - `feedback_factor` (32-bits) * `last_sample` (32-bits)
+         *  - Additionally perform an appropriate bitshift after our multiply-accumulate to ensure our output is scaled correctly (to Q16.16)
+         * 
+         * Find the appropriate DSP instructions to use here--look in <dspinst.h>
+         * NOTE: last sample truncation to 16-bits happens before writing to the output - maintain full resolution through the filter
+        */
+        int32_t lp_feed_forward = /* TODO: DSP instruction that multiplies the input sample by the feedforward factor*/ 0;
+        int32_t lp_new_output = /*TODO: DSP instruction that multiplies and adds*/0 << /* TODO: shift the result appropriately! */ 0;
 
         //assign last sample with the full resolution, and the output with truncated resolution
+        /**
+         * TODO: we do something slightly different from the low-pass filter when calculating the sample output
+         * Since we're implementing the highpass filter as `1 - low-pass filter`, how should we compute the output value?
+        */
         lp_last_output = lp_new_output;
-        sample_out = sample_in - (int16_t)(lp_new_output >> 16);
+        sample_out = sample_in /* TODO: your code here to make this a high-pass filter instead of a low-pass filter*/;
     }
 }
 
