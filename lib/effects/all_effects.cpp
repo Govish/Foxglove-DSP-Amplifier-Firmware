@@ -7,6 +7,7 @@
 #include <effect_test_passthrough.h>
 #include <effect_test_params.h>
 #include <effect_iir_lp.h>
+#include <effect_iir_hp.h>
 #include <effect_vol_fixed_point.h>
 #include <effect_vol_float_point.h>
 #include <effect_cab_sim.h>
@@ -24,6 +25,7 @@ Effect_Interface* const Effects_Manager::available_effects[] = {
         //Initialize a prototype lowpass FIR and IIR filter
         /* TODO FIR filter */
         new Effect_IIR_LP(),
+        new Effect_IIR_HP(),
 
         //Prototypes for digital volume control (fixed/float impl)
         new Effect_Vol_Fixed_Point(),

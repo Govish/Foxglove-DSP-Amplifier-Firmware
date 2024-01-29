@@ -8,6 +8,7 @@
 */
 
 #include <array> //for impulse response
+#include <limits> //numeric limits of int16_t
 #include <effect_interface.h> //implements interface specified here
 #include <scheduler.h> //to stage a transition
 #include <dspinst.h> //for DSP instructions for convolution
@@ -62,7 +63,17 @@ private:
     const RGB_LED::COLOR theme_color;    
 
     //reference to the impulse reponse kernel for the convolutional reverb
+    /**
+     * NOTES ABOUT THIS:
+     *  - Impulse response is scaled by the length of the impulse kernel to avoid numerical overflow
+     *      - since we are adding `impulse_kernel_length` 32 bit numbers, we expect the sum to be at most log2(`impulse_kernel_length`) + 32 bits
+     *  - Impulse response is further scaled by an `IMPULSE_POST_SCALING` factor
+     *      - this ensures that the signal safely clips if numeric limits are exceeded in the case of a "worst case signal"
+     *      - "worst case signal" means the FIR convolution will produce its maximum possible value (exceeding numeric limits) 
+    */
     const Impulse_Response_t& impulse_kernel;
+    static constexpr size_t IMPULSE_POST_SCALE_SHIFT = 4; //corresponds to 16
+    static constexpr size_t SUM_SHIFT_AMT = 16 - IMPULSE_POST_SCALE_SHIFT;
     
     //additionally have some sample memory for the convolution to happen
     //will use the 32x16 MAC dsp instruction to do the convolution

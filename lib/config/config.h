@@ -154,7 +154,7 @@ namespace App_Constants {
     constexpr uint32_t QUICK_EDIT_TIMEOUT_MS = 1000;
 
     //how frequently to redraw the screen for pages that require continuous redrawing
-    constexpr uint32_t SCREEN_REDRAW_MS = 25; //40FPS
+    constexpr uint32_t SCREEN_REDRAW_MS = 50; //40FPS
 
     //for the settings screen, we'll increment our fade at the following rate
     //update happens every `SCREEN_REDRAW_MS`; a value of 1/SCREEN_REDRAW_MS corresponds
