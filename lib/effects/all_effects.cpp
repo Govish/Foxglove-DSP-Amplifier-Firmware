@@ -11,6 +11,7 @@
 #include <effect_vol_fixed_point.h>
 #include <effect_vol_float_point.h>
 #include <effect_cab_sim.h>
+#include <effect_overdrive.h>
 
 //======================== STATIC VARIABLE DEFINITION =====================
 //################### USE THIS SPACE TO INSTANTIATE "MASTERs" OF ALL EFFECTS #################
@@ -33,6 +34,9 @@ Effect_Interface* const Effects_Manager::available_effects[] = {
 
         //cab sim effects
         new Effect_Cab_Sim(RGB_LED::BLUE, "Fender Twin Reverb", Effect_Cab_Sim::FENDER_TWIN_REVERB),
+
+        //overdrive effects
+        new Effect_Overdrive(),
     };
 
 //################### end EFFECT MASTER DEFINITION #####################
